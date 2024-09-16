@@ -21,8 +21,10 @@ export function Arrival() {
   const historic = useObject(Historic, new BSON.UUID(id))
   const realm = useRealm()
 
+  const title = historic?.status === 'departure' ? 'Chegada' : 'Detalhes'
+
   function handleRemoveVehicleUsage() {
-    Alert.prompt(
+    Alert.alert(
       'Cancelar',
       'Cancelar a utilização do veículo?',
       [
@@ -40,9 +42,29 @@ export function Arrival() {
     navigation.goBack()
   }
 
+  function handleArrivalRegister() {
+    try {
+      if (!historic) {
+        Alert.alert('Error', 'Não foi possível obter os dados para registrar a chegada do veículo.')
+        return
+      }
+      
+      realm.write(() => {
+        historic.status = 'arrival';
+        historic.updated_at = new Date()
+      })
+
+      Alert.alert('Chegada', 'Chegada registrada com sucesso.')
+      navigation.goBack()
+    } catch (error) {
+      console.error(error)
+      Alert.alert('Error', 'Não foi possível registrar a chegada do veículo.')
+    }
+  }
+
   return (
     <Container>
-      <Header title="Chegada" />
+      <Header title={title} />
 
       <Content>
         <Label>
@@ -60,17 +82,22 @@ export function Arrival() {
         <Description>
           {historic?.description}
         </Description>
-
-        <Footer>
-          <ButtonIcon
-            icon={X}
-            onPress={handleRemoveVehicleUsage}
-          />
-          <Button
-            title="Registrar Chegada"
-          />
-        </Footer>
       </Content>
+
+      {
+        historic?.status === 'departure' && (
+          <Footer>
+            <ButtonIcon
+              icon={X}
+              onPress={handleRemoveVehicleUsage}
+            />
+            <Button
+              title="Registrar Chegada"
+              onPress={handleArrivalRegister}
+            />
+          </Footer>
+        )
+      }
     </Container>
   )
 }
