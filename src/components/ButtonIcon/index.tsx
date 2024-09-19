@@ -3,10 +3,10 @@ import { Container } from "./styles";
 import { TouchableOpacityProps } from "react-native";
 import { useTheme } from "styled-components/native";
 
-export type IconBox = (props: IconProps) => JSX.Element
+export type IconBoxProps = (props: IconProps) => JSX.Element
 
 type Props = TouchableOpacityProps & {
-  icon: IconBox
+  icon: IconBoxProps
 }
 
 export function ButtonIcon({ icon: Icon, ...rest }: Props) {
